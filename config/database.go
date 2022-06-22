@@ -4,6 +4,10 @@ import (
 	"log"
 	"os"
 
+	"shop_api/modules/order"
+	"shop_api/modules/product"
+	"shop_api/modules/user"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -28,6 +32,7 @@ func ConnectDb() {
 	log.Println("Running Migrations")
 
 	// TODO: Add Migrations
+	db.AutoMigrate(&user.User{}, &product.Product{}, &order.Order{})
 
 	Database = DbInstance{Db: db}
 }

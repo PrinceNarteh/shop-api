@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"shop_api/config"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,6 +13,7 @@ func status(ctx *fiber.Ctx) error {
 }
 
 func main() {
+	config.ConnectDb()
 	app := fiber.New()
 
 	app.Get("/api/status", status)
