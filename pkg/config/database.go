@@ -4,10 +4,6 @@ import (
 	"log"
 	"os"
 
-	"shop_api/modules/order"
-	"shop_api/modules/product"
-	"shop_api/modules/user"
-
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -19,7 +15,7 @@ type DbInstance struct {
 
 var Database DbInstance
 
-func ConnectDb() {
+func ConnectDb(models ...interface{}) {
 	db, err := gorm.Open(sqlite.Open("shop.db"), &gorm.Config{})
 
 	if err != nil {
@@ -29,10 +25,10 @@ func ConnectDb() {
 
 	log.Println("Connected to the database successfully!")
 	db.Logger = logger.Default.LogMode(logger.Info)
-	log.Println("Running Migrations")
 
-	// TODO: Add Migrations
-	db.AutoMigrate(&user.User{}, &product.Product{}, &order.Order{})
+	//Add Migrations
+	log.Println("Running Migrations")
+	db.AutoMigrate(models...)
 
 	Database = DbInstance{Db: db}
 }

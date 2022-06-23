@@ -3,8 +3,8 @@ package order
 import (
 	"gorm.io/gorm"
 
-	"shop_api/modules/product"
-	"shop_api/modules/user"
+	"shop_api/pkg/product"
+	"shop_api/pkg/user"
 )
 
 type Order struct {
