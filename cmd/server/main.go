@@ -20,6 +20,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/api/status", status)
+	user.UserRoutes(app)
 
 	log.Fatal(app.Listen(":4000"))
 }
