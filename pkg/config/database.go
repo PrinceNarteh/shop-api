@@ -6,7 +6,6 @@ import (
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 type DbInstance struct {
@@ -24,7 +23,7 @@ func ConnectDb(models ...interface{}) {
 	}
 
 	log.Println("Connected to the database successfully!")
-	db.Logger = logger.Default.LogMode(logger.Info)
+	// db.Logger = logger.Default.LogMode(logger.Info)
 
 	//Add Migrations
 	log.Println("Running Migrations")
