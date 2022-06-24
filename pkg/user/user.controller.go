@@ -10,10 +10,15 @@ import (
 )
 
 func RegisterUserHandler(ctx *fiber.Ctx) error {
-	var user User
+	user := new(User)
 
 	if err := ctx.BodyParser(&user); err != nil {
-		return ctx.Status(400).JSON(err.Error())
+		return ctx.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	errors := utils.ValidateStruct(*user)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
 	result := config.Database.Db.Where("email = ?", user.Email).Find(&user)
@@ -34,23 +39,20 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 
 func LoginUserHandler(ctx *fiber.Ctx) error {
 	var user User
-	var body struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var data map[string]string
 
-	if err := ctx.BodyParser(&body); err != nil {
+	if err := ctx.BodyParser(&data); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	result := config.Database.Db.Where("email = ?", body.Email).Find(&user)
+	result := config.Database.Db.Where("email = ?", data["email"]).Find(&user)
 	if result.RowsAffected == 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials 1"})
 	}
 
-	isMatch := utils.VerifyPassword(body.Password, user.Password)
-	fmt.Println(isMatch)
+	fmt.Println(data)
 
+	isMatch := utils.VerifyPassword(data["password"], user.Password)
 	if !isMatch {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials 2"})
 	}
