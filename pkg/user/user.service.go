@@ -1,15 +1,16 @@
 package user
 
 import (
+	"errors"
 	"shop_api/pkg/config"
 )
 
-func FindUser(userId uint, user *User) {
-	config.Database.Db.Find(&user, userId)
-}
-
-func FindUserByEmail(email string, user *User) {
-	config.Database.Db.Find(&user, "email = ?", email)
+func FindUser(user *User, conditions ...interface{}) error {
+	config.Database.Db.Find(&user, conditions...)
+	if user.ID == 0 {
+		return errors.New("user not found")
+	}
+	return nil
 }
 
 func FindUsers(users *[]User) {

@@ -20,8 +20,7 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	FindUserByEmail(user.Email, user)
-	if user.ID > 0 {
+	if err := FindUser(user, "email = ?", user.Email); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "email already in used"})
 	}
 
@@ -54,14 +53,13 @@ func LoginUserHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	FindUserByEmail(data.Email, user)
-	if user.ID == 0 {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials 1"})
+	if err := FindUser(user, "email = ?", data.Email); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials"})
 	}
 
 	isMatch := utils.VerifyPassword(data.Password, user.Password)
 	if !isMatch {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials 2"})
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials"})
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(user)
@@ -81,7 +79,7 @@ func GetUser(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
 	}
 
-	FindUser(uint(userId), user)
+	FindUser(user, userId)
 	if user.ID == 0 {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "User Not Found"})
 	}
