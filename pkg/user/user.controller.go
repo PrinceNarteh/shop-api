@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"log"
 	"shop_api/pkg/config"
 	"shop_api/pkg/utils"
@@ -38,7 +37,7 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 }
 
 func LoginUserHandler(ctx *fiber.Ctx) error {
-	var user User
+	user := new(User)
 	var data struct {
 		Email    string `json:"email" validate:"required,email"`
 		Password string `json:"password" validate:"required,min=6"`
@@ -58,13 +57,16 @@ func LoginUserHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials 1"})
 	}
 
-	// fmt.Println(data)
-
 	isMatch := utils.VerifyPassword(data.Password, user.Password)
-	fmt.Println(isMatch)
 	if !isMatch {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials 2"})
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(user)
+}
+
+func GetUsers(ctx *fiber.Ctx) error {
+	users := make([]User, 0)
+	config.Database.Db.Find(&users)
+	return ctx.Status(fiber.StatusOK).JSON(users)
 }
