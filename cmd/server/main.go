@@ -21,6 +21,7 @@ func main() {
 
 	app.Get("/api/status", status)
 	user.UserRoutes(app)
+	product.ProductRoutes(app)
 
 	log.Fatal(app.Listen(":4000"))
 }

@@ -3,11 +3,11 @@ package user
 import "github.com/gofiber/fiber/v2"
 
 func UserRoutes(app *fiber.App) {
-	userRouters := app.Group("/api/users")
-	userRouters.Post("/register", RegisterUserHandler)
-	userRouters.Post("/login", LoginUserHandler)
-	userRouters.Get("/", GetUsers)
-	userRouters.Get("/:userId", GetUser)
-	userRouters.Patch("/:userId", UpdateUser)
-	userRouters.Delete("/:userId", DeleteUser)
+	userRoutes := app.Group("/api/users")
+	userRoutes.Post("/register", RegisterUserHandler)
+	userRoutes.Post("/login", LoginUserHandler)
+	userRoutes.Get("/", GetUsers)
+	userRoutes.Get("/:userId", GetUser)
+	userRoutes.Patch("/:userId", UpdateUser)
+	userRoutes.Delete("/:userId", DeleteUser)
 }
