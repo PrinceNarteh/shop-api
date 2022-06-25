@@ -20,9 +20,9 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	result := config.Database.Db.Where("email = ?", user.Email).Find(&user)
-	if result.RowsAffected > 0 {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Email already in use."})
+	FindUserByEmail(user.Email, user)
+	if user.ID > 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "email already in used"})
 	}
 
 	hashedPassword, err := utils.HashPassword(user.Password)
@@ -33,7 +33,9 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 	user.Password = string(hashedPassword)
 	config.Database.Db.Create(&user)
 
-	return ctx.Status(201).JSON(user)
+	userResponse := CreateUserResponse(user)
+
+	return ctx.Status(201).JSON(userResponse)
 }
 
 func LoginUserHandler(ctx *fiber.Ctx) error {
@@ -52,8 +54,8 @@ func LoginUserHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	result := config.Database.Db.Where("email = ?", data.Email).Find(&user)
-	if result.RowsAffected == 0 {
+	FindUserByEmail(data.Email, user)
+	if user.ID == 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials 1"})
 	}
 
@@ -67,7 +69,7 @@ func LoginUserHandler(ctx *fiber.Ctx) error {
 
 func GetUsers(ctx *fiber.Ctx) error {
 	users := make([]User, 0)
-	config.Database.Db.Find(&users)
+	FindUsers(&users)
 	return ctx.Status(fiber.StatusOK).JSON(users)
 }
 
@@ -79,8 +81,8 @@ func GetUser(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
 	}
 
-	result := config.Database.Db.Find(&user, userId)
-	if result.RowsAffected == 0 {
+	FindUser(uint(userId), user)
+	if user.ID == 0 {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "User Not Found"})
 	}
 
