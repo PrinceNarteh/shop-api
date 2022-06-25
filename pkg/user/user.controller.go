@@ -39,20 +39,29 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 
 func LoginUserHandler(ctx *fiber.Ctx) error {
 	var user User
-	var data map[string]string
+	var data struct {
+		Email    string `json:"email" validate:"required,email"`
+		Password string `json:"password" validate:"required,min=6"`
+	}
 
 	if err := ctx.BodyParser(&data); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
-	result := config.Database.Db.Where("email = ?", data["email"]).Find(&user)
+	errors := utils.ValidateStruct(data)
+	if errors != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	result := config.Database.Db.Where("email = ?", data.Email).Find(&user)
 	if result.RowsAffected == 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials 1"})
 	}
 
-	fmt.Println(data)
+	// fmt.Println(data)
 
-	isMatch := utils.VerifyPassword(data["password"], user.Password)
+	isMatch := utils.VerifyPassword(data.Password, user.Password)
+	fmt.Println(isMatch)
 	if !isMatch {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials 2"})
 	}

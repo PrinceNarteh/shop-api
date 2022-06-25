@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +15,8 @@ type DbInstance struct {
 var Database DbInstance
 
 func ConnectDb(models ...interface{}) {
-	db, err := gorm.Open(sqlite.Open("shop.db"), &gorm.Config{})
+	dns := "host=localhost port=5432 user=postgres password=root dbname=shop sslmode=disable TimeZone=Africa/Accra"
+	db, err := gorm.Open(postgres.Open(dns), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal("Failed to connect to the database. \n", err.Error())

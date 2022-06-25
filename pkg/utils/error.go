@@ -1,11 +1,15 @@
 package utils
 
-import "github.com/go-playground/validator/v10"
+import (
+	"strings"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type ErrorResponse struct {
-	FailedField string
-	Tag         string
-	Value       string
+	Field string
+	Tag   string
+	Value string
 }
 
 var validate = validator.New()
@@ -17,9 +21,9 @@ func ValidateStruct(data interface{}) []*ErrorResponse {
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
 			var error ErrorResponse
-			error.FailedField = err.StructNamespace()
+			error.Field = err.Field()
 			error.Tag = err.Tag()
-			error.Value = err.Param()
+			error.Value = strings.Split(err.Error(), "Error:")[1]
 			errors = append(errors, &error)
 		}
 	}
