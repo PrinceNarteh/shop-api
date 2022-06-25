@@ -70,3 +70,19 @@ func GetUsers(ctx *fiber.Ctx) error {
 	config.Database.Db.Find(&users)
 	return ctx.Status(fiber.StatusOK).JSON(users)
 }
+
+func GetUser(ctx *fiber.Ctx) error {
+	user := new(User)
+
+	userId, err := ctx.ParamsInt("userId")
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
+	}
+
+	result := config.Database.Db.Find(&user, userId)
+	if result.RowsAffected == 0 {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "User Not Found"})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(user)
+}

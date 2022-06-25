@@ -7,4 +7,5 @@ func UserRoutes(app *fiber.App) {
 	userRouters.Post("/register", RegisterUserHandler)
 	userRouters.Post("/login", LoginUserHandler)
 	userRouters.Get("/", GetUsers)
+	userRouters.Get("/:userId", GetUser)
 }
