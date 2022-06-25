@@ -12,7 +12,7 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 	user := new(User)
 
 	if err := ctx.BodyParser(&user); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(err.Error())
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	errors := utils.ValidateStruct(*user)
@@ -20,7 +20,8 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	if err := FindUser(user, "email = ?", user.Email); err != nil {
+	FindUser(user, "email = ?", user.Email)
+	if user.ID > 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "email already in used"})
 	}
 
@@ -34,7 +35,7 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 
 	userResponse := CreateUserResponse(user)
 
-	return ctx.Status(201).JSON(userResponse)
+	return ctx.Status(fiber.StatusCreated).JSON(userResponse)
 }
 
 func LoginUserHandler(ctx *fiber.Ctx) error {
@@ -62,7 +63,9 @@ func LoginUserHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials"})
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(user)
+	userResponse := CreateUserResponse(user)
+
+	return ctx.Status(fiber.StatusOK).JSON(userResponse)
 }
 
 func GetUsers(ctx *fiber.Ctx) error {
@@ -86,7 +89,10 @@ func GetUser(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
 	}
 
-	FindUser(user, userId)
+	if err = FindUser(user, userId); err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
+	}
+
 	userResponse := CreateUserResponse(user)
 
 	return ctx.Status(fiber.StatusOK).JSON(userResponse)
@@ -106,9 +112,12 @@ func UpdateUser(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
 	}
 
-	FindUser(user, userId)
+	if err = FindUser(user, userId); err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
+	}
+
 	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(err.Error())
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	if data.Email != "" {
@@ -127,4 +136,21 @@ func UpdateUser(ctx *fiber.Ctx) error {
 	userResponse := CreateUserResponse(user)
 
 	return ctx.Status(fiber.StatusOK).JSON(userResponse)
+}
+
+func DeleteUser(ctx *fiber.Ctx) error {
+	user := new(User)
+
+	userId, err := ctx.ParamsInt("userId")
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
+	}
+
+	if err = FindUser(user, userId); err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	Delete(user)
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"msg": "Successfully deleted user."})
 }

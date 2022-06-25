@@ -9,4 +9,5 @@ func UserRoutes(app *fiber.App) {
 	userRouters.Get("/", GetUsers)
 	userRouters.Get("/:userId", GetUser)
 	userRouters.Patch("/:userId", UpdateUser)
+	userRouters.Delete("/:userId", DeleteUser)
 }
