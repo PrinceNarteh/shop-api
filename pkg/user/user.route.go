@@ -8,4 +8,5 @@ func UserRoutes(app *fiber.App) {
 	userRouters.Post("/login", LoginUserHandler)
 	userRouters.Get("/", GetUsers)
 	userRouters.Get("/:userId", GetUser)
+	userRouters.Patch("/:userId", UpdateUser)
 }

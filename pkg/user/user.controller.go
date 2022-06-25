@@ -68,7 +68,14 @@ func LoginUserHandler(ctx *fiber.Ctx) error {
 func GetUsers(ctx *fiber.Ctx) error {
 	users := make([]User, 0)
 	FindUsers(&users)
-	return ctx.Status(fiber.StatusOK).JSON(users)
+
+	userResponses := make([]UserResponse, 0)
+	for _, user := range users {
+		userResponse := CreateUserResponse(&user)
+		userResponses = append(userResponses, userResponse)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(userResponses)
 }
 
 func GetUser(ctx *fiber.Ctx) error {
@@ -80,9 +87,44 @@ func GetUser(ctx *fiber.Ctx) error {
 	}
 
 	FindUser(user, userId)
-	if user.ID == 0 {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "User Not Found"})
+	userResponse := CreateUserResponse(user)
+
+	return ctx.Status(fiber.StatusOK).JSON(userResponse)
+}
+
+func UpdateUser(ctx *fiber.Ctx) error {
+	user := new(User)
+	type UpdateUser struct {
+		FirstName string `json:"firstName"`
+		LastName  string `json:"lastName"`
+		Email     string `json:"email"`
+	}
+	data := new(UpdateUser)
+
+	userId, err := ctx.ParamsInt("userId")
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(user)
+	FindUser(user, userId)
+	if err := ctx.BodyParser(data); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	if data.Email != "" {
+		user.Email = data.Email
+	}
+	if data.FirstName != "" {
+
+		user.FirstName = data.FirstName
+	}
+	if data.LastName != "" {
+
+		user.LastName = data.LastName
+	}
+
+	SaveUser(user)
+	userResponse := CreateUserResponse(user)
+
+	return ctx.Status(fiber.StatusOK).JSON(userResponse)
 }

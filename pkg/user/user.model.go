@@ -12,11 +12,18 @@ type User struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
-func CreateUserResponse(user *User) User {
-	return User{
-		ID:        user.ID,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Email:     user.Email,
+type UserResponse struct {
+	ID        uint   `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Email     string `json:"email"`
+}
+
+func CreateUserResponse(userModel *User) UserResponse {
+	return UserResponse{
+		ID:        userModel.ID,
+		FirstName: userModel.FirstName,
+		LastName:  userModel.LastName,
+		Email:     userModel.Email,
 	}
 }
