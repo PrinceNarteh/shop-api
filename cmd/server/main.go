@@ -19,9 +19,11 @@ func main() {
 	config.ConnectDb(&order.Order{}, &product.Product{}, &user.User{})
 	app := fiber.New()
 
+	// Routes
 	app.Get("/api/status", status)
 	user.UserRoutes(app)
 	product.ProductRoutes(app)
+	order.OrderRoutes(app)
 
 	log.Fatal(app.Listen(":4000"))
 }
