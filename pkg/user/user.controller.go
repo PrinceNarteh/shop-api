@@ -124,11 +124,9 @@ func UpdateUser(ctx *fiber.Ctx) error {
 		user.Email = data.Email
 	}
 	if data.FirstName != "" {
-
 		user.FirstName = data.FirstName
 	}
 	if data.LastName != "" {
-
 		user.LastName = data.LastName
 	}
 

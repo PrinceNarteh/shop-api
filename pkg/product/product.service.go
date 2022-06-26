@@ -20,3 +20,11 @@ func FindProduct(product *Product, conditions ...interface{}) error {
 	}
 	return nil
 }
+
+func SaveProduct(product *Product) {
+	config.Database.Db.Save(product)
+}
+
+func Delete(product *Product) {
+	config.Database.Db.Delete(product)
+}
