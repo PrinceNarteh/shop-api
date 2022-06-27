@@ -1,6 +1,8 @@
 package order
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 func CreateOrder(ctx *fiber.Ctx) error {
 	order := new(Order)

@@ -31,7 +31,7 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 	}
 
 	user.Password = string(hashedPassword)
-	config.Database.Db.Create(&user)
+	config.DB.Create(&user)
 
 	userResponse := CreateUserResponse(user)
 

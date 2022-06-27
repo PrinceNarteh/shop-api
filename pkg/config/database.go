@@ -8,11 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type DbInstance struct {
-	Db *gorm.DB
-}
-
-var Database DbInstance
+var DB *gorm.DB
 
 func ConnectDb(models ...interface{}) {
 	dns := "host=localhost port=5432 user=postgres password=root dbname=shop sslmode=disable TimeZone=Africa/Accra"
@@ -30,5 +26,5 @@ func ConnectDb(models ...interface{}) {
 	log.Println("Running Migrations")
 	db.AutoMigrate(models...)
 
-	Database = DbInstance{Db: db}
+	DB = db
 }

@@ -6,7 +6,7 @@ import (
 )
 
 func FindUser(user *User, conditions ...interface{}) error {
-	result := config.Database.Db.Find(&user, conditions...)
+	result := config.DB.Find(&user, conditions...)
 	if result.RowsAffected == 0 {
 		return errors.New("user not found")
 	}
@@ -14,13 +14,13 @@ func FindUser(user *User, conditions ...interface{}) error {
 }
 
 func FindUsers(users *[]User) {
-	config.Database.Db.Find(users)
+	config.DB.Find(users)
 }
 
 func Delete(user *User) {
-	config.Database.Db.Delete(user)
+	config.DB.Delete(user)
 }
 
 func SaveUser(user *User) {
-	config.Database.Db.Save(user)
+	config.DB.Save(user)
 }

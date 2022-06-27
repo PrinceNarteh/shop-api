@@ -6,11 +6,11 @@ import (
 )
 
 func Create(data interface{}) {
-	config.Database.Db.Create(data)
+	config.DB.Create(data)
 }
 
 func Find(dest interface{}, conditions ...interface{}) error {
-	result := config.Database.Db.Find(dest, conditions...)
+	result := config.DB.Find(dest, conditions...)
 	if result.RowsAffected == 0 {
 		return errors.New("user not found")
 	}
@@ -18,13 +18,13 @@ func Find(dest interface{}, conditions ...interface{}) error {
 }
 
 func FindMany(dest interface{}, conditions ...interface{}) {
-	config.Database.Db.Find(dest)
+	config.DB.Find(dest)
 }
 
 func Delete(data interface{}) {
-	config.Database.Db.Delete(data)
+	config.DB.Delete(data)
 }
 
 func Save(data interface{}) {
-	config.Database.Db.Save(data)
+	config.DB.Save(data)
 }

@@ -6,15 +6,15 @@ import (
 )
 
 func Create(product *Product) {
-	config.Database.Db.Create(product)
+	config.DB.Create(product)
 }
 
 func FindProducts(products *[]Product) {
-	config.Database.Db.Find(products)
+	config.DB.Find(products)
 }
 
 func FindProduct(product *Product, conditions ...interface{}) error {
-	result := config.Database.Db.Find(product, conditions...)
+	result := config.DB.Find(product, conditions...)
 	if result.RowsAffected == 0 {
 		return errors.New("product not found")
 	}
@@ -22,9 +22,9 @@ func FindProduct(product *Product, conditions ...interface{}) error {
 }
 
 func SaveProduct(product *Product) {
-	config.Database.Db.Save(product)
+	config.DB.Save(product)
 }
 
 func Delete(product *Product) {
-	config.Database.Db.Delete(product)
+	config.DB.Delete(product)
 }

@@ -6,11 +6,11 @@ import (
 )
 
 func GetOrders(orders *[]Order) {
-	config.Database.Db.Find(orders)
+	config.DB.Find(orders)
 }
 
 func FindProduct(order *Order, conditions ...interface{}) error {
-	result := config.Database.Db.Find(order, conditions...)
+	result := config.DB.Find(order, conditions...)
 	if result.RowsAffected == 0 {
 		return errors.New("order not found")
 	}
@@ -18,13 +18,13 @@ func FindProduct(order *Order, conditions ...interface{}) error {
 }
 
 func Save(product *Order) {
-	config.Database.Db.Save(product)
+	config.DB.Save(product)
 }
 
 func Create(order *Order) {
-	config.Database.Db.Create(order)
+	config.DB.Create(order)
 }
 
 func Delete(order *Order) {
-	config.Database.Db.Delete(order)
+	config.DB.Delete(order)
 }
