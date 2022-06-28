@@ -20,7 +20,7 @@ func RegisterUserHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	FindUser(user, "email = ?", user.Email)
+	config.DB.Find(user, "email = ?", user.Email)
 	if user.ID > 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "email already in used"})
 	}
@@ -54,7 +54,8 @@ func LoginUserHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	if err := FindUser(user, "email = ?", data.Email); err != nil {
+	config.DB.Find(user, "email = ?", data.Email)
+	if user.ID == 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid credentials"})
 	}
 
@@ -70,7 +71,7 @@ func LoginUserHandler(ctx *fiber.Ctx) error {
 
 func GetUsers(ctx *fiber.Ctx) error {
 	users := make([]User, 0)
-	FindUsers(&users)
+	config.DB.Find(&users)
 
 	userResponses := make([]UserResponse, 0)
 	for _, user := range users {
@@ -89,7 +90,8 @@ func GetUser(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
 	}
 
-	if err = FindUser(user, userId); err != nil {
+	config.DB.Find(user, userId)
+	if user.ID == 0 {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
 
@@ -112,7 +114,8 @@ func UpdateUser(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
 	}
 
-	if err = FindUser(user, userId); err != nil {
+	config.DB.Find(user, userId)
+	if user.ID == 0 {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
 
@@ -130,7 +133,7 @@ func UpdateUser(ctx *fiber.Ctx) error {
 		user.LastName = data.LastName
 	}
 
-	SaveUser(user)
+	config.DB.Find(user)
 	userResponse := CreateUserResponse(user)
 
 	return ctx.Status(fiber.StatusOK).JSON(userResponse)
@@ -144,11 +147,12 @@ func DeleteUser(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide user ID as integer"})
 	}
 
-	if err = FindUser(user, userId); err != nil {
+	config.DB.Find(user, userId)
+	if user.ID == 0 {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	Delete(user)
+	config.DB.Find(user)
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"msg": "Successfully deleted user."})
 }

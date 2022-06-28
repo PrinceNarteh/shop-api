@@ -1,6 +1,8 @@
 package order
 
 import (
+	"shop_api/pkg/config"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,6 +13,6 @@ func CreateOrder(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	Create(order)
+	config.DB.Create(order)
 	return ctx.Status(fiber.StatusCreated).JSON(order)
 }

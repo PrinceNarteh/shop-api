@@ -1,7 +1,7 @@
 package product
 
 import (
-	"shop_api/pkg/repository"
+	"shop_api/pkg/config"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -13,13 +13,13 @@ func CreateProduct(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	repository.Create(product)
+	config.DB.Create(product)
 	return ctx.Status(fiber.StatusCreated).JSON(product)
 }
 
 func GetProducts(ctx *fiber.Ctx) error {
 	products := make([]Product, 0)
-	repository.FindMany(&products)
+	config.DB.Find(&products)
 	return ctx.Status(fiber.StatusOK).JSON(products)
 }
 
@@ -31,7 +31,8 @@ func GetProduct(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Please make sure to provide product ID as integer"})
 	}
 
-	if err = repository.Find(product, productId); err != nil {
+	config.DB.Find(product, productId)
+	if product.ID == 0 {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
 
@@ -57,7 +58,8 @@ func UpdateProduct(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	if err = repository.Find(product, productId); err != nil {
+	config.DB.Find(product, productId)
+	if product.ID == 0 {
 		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"error": err.Error()})
 	}
 
@@ -74,7 +76,7 @@ func UpdateProduct(ctx *fiber.Ctx) error {
 		product.Name = body.Name
 	}
 
-	repository.Save(product)
+	config.DB.Save(product)
 	return ctx.Status(fiber.StatusOK).JSON(product)
 }
 
@@ -86,10 +88,11 @@ func DeleteProduct(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	if err = repository.Find(product, productId); err != nil {
+	config.DB.Find(product, productId)
+	if product.ID == 0 {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	Delete(product)
+	config.DB.Delete(product)
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"msg": "Successfully deleted product."})
 }
